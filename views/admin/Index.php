@@ -5,16 +5,18 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
 
 require_once(ROOT_DIR."includes\header.php");
 
-if(isset($_SESSION["mali"])){
+if (isset($_SESSION["mali"])) {
     $messErr = $_SESSION["mali"];
     unset($_SESSION["mali"]);
 }
-if(isset($_SESSION["tama"])){
+
+if (isset($_SESSION["tama"])) {
     $messSuc = $_SESSION["tama"];
     unset($_SESSION["tama"]);
 }
 
-include(ROOT_DIR. "app/books/getBook.php")
+include(ROOT_DIR. "app/books/getBook.php");
+
 ?>
 <?php
 require_once(ROOT_DIR."includes\\navbar.php");
@@ -29,17 +31,21 @@ require_once(ROOT_DIR."includes\\navbar.php");
             <a href="<?php echo BASE_URL; ?>views/admin/add.php" class="btn btn-success">Add New Book</a>
         </div>
 
-        <!-- Success Message -->
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>Book added successfully!</strong> 
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <!-- Success Message (Conditional) -->
+        <?php if (isset($messSuc)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong><?php echo $messSuc; ?></strong> 
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
-        <!-- Error Message -->
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Error: Could not add book.</strong> 
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <!-- Error Message (Conditional) -->
+        <?php if (isset($messErr)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong><?php echo $messErr; ?></strong> 
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
         <p class="text-center">Manage all books in the catalog</p>
         <hr>
@@ -48,17 +54,12 @@ require_once(ROOT_DIR."includes\\navbar.php");
     <!-- Book Cards Container -->
     <div class="container content mt-3">
         <div class="row">
-            <!-- Sample Book Card -->
-            
+            <!-- Loop through each book and include the book card -->
             <?php 
-            foreach($bookList as $books){
-            include(ROOT_DIR."views/components/bookCard.php"); 
+            foreach ($bookList as $books) {
+                include(ROOT_DIR."views/components/bookCard.php"); 
             }
-            
             ?>  
-            </div>
-
-            <!-- Duplicate the sample card for additional books -->
         </div>
     </div>
 
