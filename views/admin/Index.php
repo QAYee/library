@@ -19,7 +19,7 @@ include(ROOT_DIR. "app/books/getBook.php");
 
 ?>
 <?php
-require_once(ROOT_DIR."includes\\navbar.php");
+require_once(ROOT_DIR."includes/navbar.php");
 ?>
 <body>
 

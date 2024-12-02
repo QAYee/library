@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Sanitize user input
     $bookTitle = htmlspecialchars($_POST["bookTitle"]);
+    $productImage2 = htmlspecialchars($_POST["productImage2"]);
     $description = htmlspecialchars($_POST["description"]);
     $author = htmlspecialchars($_POST["author"]);
     $category = htmlspecialchars($_POST["category"]);
