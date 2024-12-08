@@ -4,8 +4,10 @@ require_once(ROOT_DIR . "/includes/header.php");
 require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
 session_start();
 
+// Initialize database connection
 $db = new DatabaseConnect();
 $conn = $db->connectDB();
+$conn->set_charset("utf8mb4"); // Ensure UTF-8 encoding for handling special characters
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
 
 // Retrieve book data based on ID
@@ -63,28 +65,29 @@ function uploadImage($file, $current_image_path) {
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect and sanitize form data
-    $title = isset($_POST['title']) && $_POST['title'] !== '' 
-        ? mysqli_real_escape_string($conn, $_POST['title']) 
+    $title = isset($_POST['title']) && $_POST['title'] !== ''
+        ? mysqli_real_escape_string($conn, $_POST['title'])
         : $book['title'];
 
-    $author = isset($_POST['author']) && $_POST['author'] !== '' 
-        ? mysqli_real_escape_string($conn, $_POST['author']) 
+    $author = isset($_POST['author']) && $_POST['author'] !== ''
+        ? mysqli_real_escape_string($conn, $_POST['author'])
         : $book['author'];
 
-    $category = isset($_POST['category']) && $_POST['category'] !== '' 
-        ? mysqli_real_escape_string($conn, $_POST['category']) 
+    $category = isset($_POST['category']) && $_POST['category'] !== ''
+        ? mysqli_real_escape_string($conn, $_POST['category'])
         : $book['category'];
 
-    $isbn = isset($_POST['isbn']) && $_POST['isbn'] !== '' 
-        ? mysqli_real_escape_string($conn, $_POST['isbn']) 
+    $isbn = isset($_POST['isbn']) && $_POST['isbn'] !== ''
+        ? mysqli_real_escape_string($conn, $_POST['isbn'])
         : $book['ISBN'];
 
-    $description = isset($_POST['description']) && $_POST['description'] !== '' 
+    // Allow description to accept any text
+    $description = isset($_POST['description']) 
         ? mysqli_real_escape_string($conn, $_POST['description']) 
         : $book['description'];
 
-    $copies = isset($_POST['copies']) && is_numeric($_POST['copies']) 
-        ? (int)$_POST['copies'] 
+    $copies = isset($_POST['copies']) && is_numeric($_POST['copies'])
+        ? (int)$_POST['copies']
         : $book['copies'];
 
     // Update book details (without image)
@@ -97,10 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         copies = ? 
         WHERE id = ?";
     $stmt = $conn->prepare($update_query);
-    $stmt->bind_param("ssssisi", $title, $author, $category, $isbn, $description, $copies, $book_id);
+    $stmt->bind_param("ssssssi", $title, $author, $category, $isbn, $description, $copies, $book_id);
 
     if (!$stmt->execute()) {
-        die('Error: ' . $stmt->error);
+        error_log("SQL Error: " . $stmt->error); // Log the error
+        die('Error updating book details. Please check server logs.');
     }
     $stmt->close();
 
@@ -113,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("si", $image_path, $book_id);
 
             if (!$stmt->execute()) {
-                die('Error: ' . $stmt->error);
+                error_log("SQL Error: " . $stmt->error); // Log the error
+                die('Error updating book image. Please check server logs.');
             }
             $stmt->close();
         }
@@ -126,6 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $conn->close();
 ?>
+
+
+
+
 
 
 
