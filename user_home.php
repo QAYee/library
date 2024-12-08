@@ -320,7 +320,6 @@ if (mysqli_num_rows($result) > 0) {
     <p><strong>Category:</strong> <?php echo $bookCategory; ?></p>
     <p><strong>ISBN:</strong> <?php echo $bookIsbn; ?></p>
     <p><strong>Copies Available:</strong> <?php echo $bookCopies; ?></p>
-    <p><strong>Total Borrows:</strong> <?php echo $bookTotalBorrows; ?></p>
     <div class="btn-container">
         <a href="/app/books/borrow_book.php?id=<?php echo $book['id']; ?>" class="btn <?php echo $button_class; ?>" <?php echo $disabled; ?>><?php echo $button_text; ?></a>
         <?php if (isset($request) && $request['status'] == 'approved') { ?>

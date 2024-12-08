@@ -1,7 +1,6 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
 require_once(ROOT_DIR . "/includes/header.php");
-
 require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
 session_start();
 
@@ -19,13 +18,13 @@ if ($book_id <= 0) {
 }
 
 // Fetch the book's current data
-$stmt = mysqli_prepare($conn, "SELECT * FROM books WHERE id = ?");
-mysqli_stmt_bind_param($stmt, "i", $book_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-mysqli_stmt_close($stmt);
+$stmt = $conn->prepare("SELECT * FROM books WHERE id = ?");
+$stmt->bind_param("i", $book_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$stmt->close();
 
-$book = mysqli_fetch_assoc($result);
+$book = $result->fetch_assoc();
 
 if (!$book) {
     echo '<script>alert("Book not found!"); window.location.href="admin_home.php";</script>';
@@ -46,8 +45,11 @@ function uploadImage($file, $current_image_path) {
 
         if (move_uploaded_file($file['tmp_name'], $target_file)) {
             // Delete the old image if it exists and is different from the new one
-            if ($current_image_path !== $target_file) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . $current_image_path);
+            if ($current_image_path && realpath($_SERVER['DOCUMENT_ROOT'] . $current_image_path) !== realpath($target_file)) {
+                $old_file_path = $_SERVER['DOCUMENT_ROOT'] . $current_image_path;
+                if (file_exists($old_file_path)) {
+                    unlink($old_file_path);
+                }
             }
             return '/pages/uploads/' . $file_name;
         } else {
@@ -55,48 +57,78 @@ function uploadImage($file, $current_image_path) {
         }
     }
 
-    return $current_image_path; // Return the current image path if no new image is uploaded or upload fails
+    return $current_image_path;
 }
 
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect and sanitize form data
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $author = mysqli_real_escape_string($conn, $_POST['author']);
-    $category = mysqli_real_escape_string($conn, $_POST['category']);
-    $isbn = mysqli_real_escape_string($conn, $_POST['isbn']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $copies = isset($_POST['copies']) ? (int)$_POST['copies'] : 0;
+    $title = isset($_POST['title']) && $_POST['title'] !== '' 
+        ? mysqli_real_escape_string($conn, $_POST['title']) 
+        : $book['title'];
 
-    // Handle the image upload
-    $image_path = uploadImage($_FILES['image'], $book['image_path']);
+    $author = isset($_POST['author']) && $_POST['author'] !== '' 
+        ? mysqli_real_escape_string($conn, $_POST['author']) 
+        : $book['author'];
 
-    // Update the book record in the database
+    $category = isset($_POST['category']) && $_POST['category'] !== '' 
+        ? mysqli_real_escape_string($conn, $_POST['category']) 
+        : $book['category'];
+
+    $isbn = isset($_POST['isbn']) && $_POST['isbn'] !== '' 
+        ? mysqli_real_escape_string($conn, $_POST['isbn']) 
+        : $book['ISBN'];
+
+    $description = isset($_POST['description']) && $_POST['description'] !== '' 
+        ? mysqli_real_escape_string($conn, $_POST['description']) 
+        : $book['description'];
+
+    $copies = isset($_POST['copies']) && is_numeric($_POST['copies']) 
+        ? (int)$_POST['copies'] 
+        : $book['copies'];
+
+    // Update book details (without image)
     $update_query = "UPDATE books SET 
         title = ?, 
         author = ?, 
         category = ?, 
         ISBN = ?, 
         description = ?, 
-        image_path = ?, 
         copies = ? 
         WHERE id = ?";
+    $stmt = $conn->prepare($update_query);
+    $stmt->bind_param("ssssisi", $title, $author, $category, $isbn, $description, $copies, $book_id);
 
-    $stmt = mysqli_prepare($conn, $update_query);
-    mysqli_stmt_bind_param($stmt, "ssssisii", $title, $author, $category, $isbn, $description, $image_path, $copies, $book_id);
+    if (!$stmt->execute()) {
+        die('Error: ' . $stmt->error);
+    }
+    $stmt->close();
 
-    if (mysqli_stmt_execute($stmt)) {
-        header("Location: ../../admin_home.php");
-        exit;
-    } else {
-        echo '<script>alert("Failed to update book: ' . mysqli_stmt_error($stmt) . '");</script>';
+    // Handle the image upload separately
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $image_path = uploadImage($_FILES['image'], $book['image_path']);
+        if ($image_path !== $book['image_path']) {
+            $image_query = "UPDATE books SET image_path = ? WHERE id = ?";
+            $stmt = $conn->prepare($image_query);
+            $stmt->bind_param("si", $image_path, $book_id);
+
+            if (!$stmt->execute()) {
+                die('Error: ' . $stmt->error);
+            }
+            $stmt->close();
+        }
     }
 
-    mysqli_stmt_close($stmt);
+    // Redirect to the admin home page on success
+    header("Location: ../../admin_home.php");
+    exit;
 }
 
-mysqli_close($conn);
+$conn->close();
 ?>
+
+
+
 
 
 
@@ -105,7 +137,7 @@ mysqli_close($conn);
 <html lang="en">
 <head>
     <title>Edit Book</title>
-    <style>
+<style>
 
 .navbar {
     display: flex;
@@ -291,7 +323,7 @@ mysqli_close($conn);
         .form-actions a {
             background-color: #555;
         }
-    </style>
+</style>
 </head>
 <body>
 

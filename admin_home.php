@@ -235,7 +235,7 @@ $conn = $db->connectDB();
     <div class="container" style="padding: 20px;">
         <!-- Search Bar -->
         <div style="margin-bottom: 20px;">
-            <form action="search_books.php" method="get">
+            <form action="<?php echo BASE_URL;?>views/admin/search_books.php" method="get">
                 <input type="text" name="query" placeholder="Search Books" required style="width: calc(100% - 110px); padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
                 <button type="submit" style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
             </form>
@@ -249,17 +249,7 @@ $conn = $db->connectDB();
         </div>
 
         <!-- Book Categories -->
-        <div>
-        <h2 style="margin-bottom: 10px; color: #a33b3b;">Categories</h2>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Fiction</button> <!-- Dark Blue -->
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Non-Fiction</button> <!-- Dark Green -->
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Science</button> <!-- Dark Orange -->
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">History</button> <!-- Dark Red -->
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Art</button> <!-- Dark Purple -->
-            <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Technology</button> <!-- Dark Yellow -->
-        </div>
-    </div>
+   
 
 
     <div class="book-cards-container">
@@ -298,7 +288,6 @@ if (mysqli_num_rows($result) > 0) {
             <p><strong>Category:</strong> <?php echo $bookCategory; ?></p>
             <p><strong>ISBN:</strong> <?php echo $bookIsbn; ?></p>
             <p><strong>Copies Available:</strong> <?php echo $bookCopies; ?></p>
-            <p><strong>Total Borrows:</strong> <?php echo $bookTotalBorrows; ?></p>
             <div class="btn-container">
                 <a href="<?php echo BASE_URL;?>views/admin/edit_book.php?id=<?php echo $book['id']; ?>" class="btn btn-edit">Edit</a>
                 <a href="<?php echo BASE_URL;?>app/books/delete_book.php?id=<?php echo $book['id']; ?>" class="btn btn-delete">Delete</a>
