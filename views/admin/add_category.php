@@ -1,8 +1,10 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
-
+require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
+require_once(ROOT_DIR . "/includes/header.php");
+require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
+session_start();
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
 
 // Check if the form is submitted

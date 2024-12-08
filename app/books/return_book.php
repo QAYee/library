@@ -1,6 +1,12 @@
 <?php
-include('../includes/db.php'); // Include database connection
-include('../includes/session_start.php'); // Include session start
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+
+session_start();
+// Initialize the database connection
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
 
 if (isset($_GET['id']) && isset($_SESSION['username'])) {
     $book_id = $_GET['id']; // Get the book ID from the URL
@@ -26,7 +32,7 @@ if (isset($_GET['id']) && isset($_SESSION['username'])) {
                                               WHERE book_id = '$book_id' AND username = '$username' AND return_date IS NULL";
                 if (mysqli_query($conn, $update_transaction_query)) {
                     // Successfully updated all relevant records
-                    echo "<script>alert('Book returned successfully!'); window.location.href = 'book_status.php';</script>";
+                    echo "<script>alert('Book returned successfully!'); window.location.href = '" . BASE_URL . "user_home.php';</script>";
                 } else {
                     echo "Error updating transaction return date: " . mysqli_error($conn);
                 }
@@ -37,9 +43,9 @@ if (isset($_GET['id']) && isset($_SESSION['username'])) {
             echo "Error updating book copies: " . mysqli_error($conn);
         }
     } else {
-        echo "<script>alert('No approved borrow request found for this book.'); window.location.href = 'book_status.php';</script>";
+        echo "<script>alert('No approved borrow request found for this book.'); window.location.href = '" . BASE_URL . "user_home.php';</script>";
     }
 } else {
-    echo "<script>alert('Invalid request.'); window.location.href = 'book_status.php';</script>";
+    echo "<script>alert('Invalid request.'); window.location.href = '" . BASE_URL . "user_home.php';</script>";
 }
 ?>

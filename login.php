@@ -1,7 +1,8 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+session_start();
 
 
 
@@ -24,12 +25,7 @@ include('../includes/session_start.php');
     </header>
 
     <!-- Navbar -->
-    <nav class="navbar">
-        <a href="home.php">Home</a>
-        <a href="login.php">Login</a>
-        <a href="register.php">Register</a>
-        <a href="#categories">Categories</a>
-    </nav>
+    <?php require_once(ROOT_DIR."/includes/navbar.php");?>
 
     <!-- Main Content (Login Form) -->
     <div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
@@ -48,7 +44,7 @@ include('../includes/session_start.php');
             ?>
 
             <!-- Login Form -->
-            <form action="../login_action.php" method="post">
+            <form action="/app/auth/login_action.php" method="post">
                 <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; background-color: #e2e2e2; color: #333;">
                 <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; background-color: #e2e2e2; color: #333;">
                 <button type="submit" style="padding: 12px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;">Login</button>
@@ -61,9 +57,4 @@ include('../includes/session_start.php');
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 Library System. All rights reserved.</p>
-    </footer>
-
-</body>
-</html>
+    <?php require_once(ROOT_DIR."/includes/footer.php")?>

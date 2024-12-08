@@ -1,7 +1,13 @@
 <?php
-        // Include necessary files
-        include('../includes/db.php');
-        include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+
+session_start();
+// Initialize the database connection
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
+
 
         // Check if the user is logged in
         if (!isset($_SESSION['username'])) {
@@ -36,6 +42,7 @@
             if (mysqli_num_rows($requestResult) > 0) {
                 // If request already exists, show a message and exit
                 echo "You have already requested this book.";
+                header("Location: " . BASE_URL . "user_home.php");
             } else {
                 // Calculate estimated return date (5 days from the current date)
                 $estimated_return_date = date('Y-m-d', strtotime('+5 days'));
@@ -45,9 +52,9 @@
                                   VALUES ('$book_id', '$username', 'pending', '$estimated_return_date')";
 
                 if (mysqli_query($conn, $insertRequest)) {
-                    echo "Your request for '$bookTitle' has been placed. Waiting for approval.";
+                    echo "<script>alert('Your request for \"$bookTitle\" has been placed. Waiting for approval.'); window.location.href='" . BASE_URL . "user_home.php';</script>";
                 } else {
-                    echo "Error: Could not place the request.";
+                    echo "<script>alert('Error: Could not place the request.'); window.location.href='" . BASE_URL . "user_home.php';</script>";
                 }
             }
         } else {

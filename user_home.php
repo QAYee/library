@@ -1,7 +1,12 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+
+session_start();
+// Initialize the database connection
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
 
         if (isset($_SESSION['username'])) {
             $username = $_SESSION['username'];  // Get the logged-in user's username
@@ -223,14 +228,12 @@ include('../includes/session_start.php');
             <!-- Navbar -->
             <nav class="navbar">
                 <a href="user_home.php">Home</a>
-                <a href="book_status.php">Borrowed Books</a> <!-- Book Request Link -->
+                <a href="<?php echo BASE_URL; ?>views/user/book_status.php">Borrowed Books</a> <!-- Book Request Link -->
                 <div class="dropdown">
                     <button class="dropbtn">
                         <?php echo htmlspecialchars($username); ?> ▼
                     </button>
                     <div class="dropdown-content">
-                        <a href="profile_admin.php">Profile</a>
-                        <a href="dashboard_admin.php">Dashboard</a>
                         <a href="home.php" style="color: red;">Logout</a>
                     </div>
                 </div>
@@ -240,7 +243,7 @@ include('../includes/session_start.php');
             <div class="container" style="padding: 20px;">
                 <!-- Search Bar -->
                 <div style="margin-bottom: 20px;">
-                    <form action="search_books.php" method="get">
+                    <form action="<?php echo BASE_URL;?>app/books/search_books.php" method="GET">
                         <input type="text" name="query" placeholder="Search Books" required style="width: calc(100% - 110px); padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
                         <button type="submit" style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
                     </form>
@@ -248,89 +251,92 @@ include('../includes/session_start.php');
 
                 
             
-                <!-- Book Categories -->
-                <div>
-                <h2 style="margin-bottom: 10px; color: #a33b3b;">Categories</h2>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Fiction</button> <!-- Dark Blue -->
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Non-Fiction</button> <!-- Dark Green -->
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Science</button> <!-- Dark Orange -->
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">History</button> <!-- Dark Red -->
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Art</button> <!-- Dark Purple -->
-                    <button style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px;">Technology</button> <!-- Dark Yellow -->
-                </div>
-            </div>
+           
+                
 
 
             <div class="book-cards-container">
             <?php
-            if (mysqli_num_rows($result) > 0) {
-                // Loop through the books and display them
-                while ($book = mysqli_fetch_assoc($result)) {
-                    // Use ternary operators to check if the value exists
-                    $bookTitle = isset($book['title']) ? htmlspecialchars($book['title']) : 'No Title';
-                    $bookDescription = isset($book['description']) ? htmlspecialchars($book['description']) : 'No Description';
-                    $bookAuthor = isset($book['author']) ? htmlspecialchars($book['author']) : 'No Author';
-                    $bookCategory = isset($book['category']) ? htmlspecialchars($book['category']) : 'No Category';
-                    $bookIsbn = isset($book['ISBN']) ? htmlspecialchars($book['ISBN']) : 'No ISBN';
-                    $bookCopies = isset($book['copies']) ? htmlspecialchars($book['copies']) : '0';
-                    $bookTotalBorrows = isset($book['total_borrows']) ? htmlspecialchars($book['total_borrows']) : '0';
-                    $bookImage = isset($book['image_path']) ? htmlspecialchars($book['image_path']) : 'default-image.jpg'; // Default image if missing
-                    $username = $_SESSION['username'];
-                    $book_id = $book['id'];
-                    $query = "SELECT * FROM book_requests WHERE book_id = '$book_id' AND username = '$username' LIMIT 1";
-                    $request_result = mysqli_query($conn, $query);
-                    $request = mysqli_fetch_assoc($request_result);
+if (mysqli_num_rows($result) > 0) {
+    while ($book = mysqli_fetch_assoc($result)) {
+        $bookTitle = isset($book['title']) ? htmlspecialchars($book['title']) : 'No Title';
+        $bookDescription = isset($book['description']) ? htmlspecialchars($book['description']) : 'No Description';
+        $bookAuthor = isset($book['author']) ? htmlspecialchars($book['author']) : 'No Author';
+        $bookCategory = isset($book['category']) ? htmlspecialchars($book['category']) : 'No Category';
+        $bookIsbn = isset($book['ISBN']) ? htmlspecialchars($book['ISBN']) : 'No ISBN';
+        $bookCopies = isset($book['copies']) ? htmlspecialchars($book['copies']) : '0';
+        $bookTotalBorrows = isset($book['total_borrows']) ? htmlspecialchars($book['total_borrows']) : '0';
+        $bookImage = isset($book['image_path']) ? htmlspecialchars($book['image_path']) : 'default-image.jpg';
+        $username = $_SESSION['username'];
+        $book_id = $book['id'];
+        
+        // Query to check the book request status for the current user
+        $query = "SELECT * FROM book_requests WHERE book_id = '$book_id' AND username = '$username' LIMIT 1";
+        $request_result = mysqli_query($conn, $query);
+        $request = mysqli_fetch_assoc($request_result);
 
-                    if ($request) {
-                        // Request found, check status
-                        $status = $request['status'];
-                        if ($status == 'pending') {
-                            $button_text = 'Pending';
-                            $button_class = 'btn-pending';
-                            $disabled = 'disabled';
-                        } elseif ($status == 'approved') {
-                            $button_text = 'Borrowed';
-                            $button_class = 'btn-borrowed';
-                            $disabled = 'disabled';
-                        } else {
-                            $button_text = 'Declined';
-                            $button_class = 'btn-declined';
-                            $disabled = 'disabled';
-                        }
-                    } else {
-                        // No request made yet
-                        $button_text = 'Borrow';
-                        $button_class = 'btn-borrow';
-                        $disabled = '';
-                    }
-        ?>
-                <!-- Book Card -->
-                <div class="book-card">
-                    <img src="<?php echo $bookImage; ?>" alt="Book Image">
-                    <h3 class="book-title"><?php echo $bookTitle; ?></h3>
-                    <p><strong>Description:</strong> <?php echo $bookDescription; ?></p>
-                    <p><strong>Author:</strong> <?php echo $bookAuthor; ?></p>
-                    <p><strong>Category:</strong> <?php echo $bookCategory; ?></p>
-                    <p><strong>ISBN:</strong> <?php echo $bookIsbn; ?></p>
-                    <p><strong>Copies Available:</strong> <?php echo $bookCopies; ?></p>
-                    <p><strong>Total Borrows:</strong> <?php echo $bookTotalBorrows; ?></p>
-                    <div class="btn-container">
-                        
-                    <a href="borrow_book.php?id=<?php echo $book['id']; ?>" class="btn <?php echo $button_class; ?>" <?php echo $disabled; ?>><?php echo $button_text; ?></a>
-                        <a href="return_book.php?id=<?php echo $book['id']; ?>" class="btn btn-return">Return</a>
-            
-                    </div>
-                </div>
-            <?php
+        if ($request) {
+            $status = $request['status'];
+            if ($status == 'pending') {
+                $button_text = 'Pending';
+                $button_class = 'btn-pending';
+                $disabled = 'disabled'; // Button is disabled for pending requests
+            } elseif ($status == 'approved') {
+                $button_text = 'Borrowed';
+                $button_class = 'btn-borrowed';
+                $disabled = 'disabled'; // Button is disabled for approved requests
+            } elseif ($status == 'returned') {
+                $button_text = 'Borrow';
+                $button_class = 'btn-borrow';
+                $disabled = ''; // Enable the button for returned books, allowing borrowing again
+                
+                // Delete transaction for returned book
+                $delete_query = "DELETE FROM book_requests WHERE book_id = '$book_id' AND username = '$username'";
+                if (mysqli_query($conn, $delete_query)) {
+                    
+                } else {
+                    echo "<p>Error deleting transaction: " . mysqli_error($conn) . "</p>";
                 }
-            } else {
-                echo "<p>No books found.</p>";
+            } else { // For declined or other statuses
+                $button_text = 'Declined';
+                $button_class = 'btn-declined';
+                $disabled = 'disabled'; // Button is disabled for declined requests
             }
-            ?>
+        } else {
+            $button_text = 'Borrow';
+            $button_class = 'btn-borrow';
+            $disabled = ''; // Enable the button if no request has been made
+        }
+?>
+        <!-- Book Card -->
+<div class="book-card">
+  
+    <a href="/app/books/history.php?id=<?php echo $book['id']; ?>">
+        <img src="<?php echo $bookImage; ?>" alt="Book Image">
+    </a>
+    <h3 class="book-title"><?php echo $bookTitle; ?></h3>
+    <p><strong>Description:</strong> <?php echo $bookDescription; ?></p>
+    <p><strong>Author:</strong> <?php echo $bookAuthor; ?></p>
+    <p><strong>Category:</strong> <?php echo $bookCategory; ?></p>
+    <p><strong>ISBN:</strong> <?php echo $bookIsbn; ?></p>
+    <p><strong>Copies Available:</strong> <?php echo $bookCopies; ?></p>
+    <p><strong>Total Borrows:</strong> <?php echo $bookTotalBorrows; ?></p>
+    <div class="btn-container">
+        <a href="/app/books/borrow_book.php?id=<?php echo $book['id']; ?>" class="btn <?php echo $button_class; ?>" <?php echo $disabled; ?>><?php echo $button_text; ?></a>
+        <?php if (isset($request) && $request['status'] == 'approved') { ?>
+            <a href="/app/books/return_book.php?id=<?php echo $book['id']; ?>" class="btn btn-return">Return</a>
+        <?php } ?>
+    </div>
+</div>
+<?php
+    }
+} else {
+    echo "<p>No books found.</p>";
+}
+?>
+
+
         </div>
-
-
 
             </div>
 

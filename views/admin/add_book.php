@@ -1,45 +1,12 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+
+session_start();
+// Initialize the database connection
 
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
-
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect form data
-    $title = mysqli_real_escape_string($conn, $_POST['title']);
-    $author = mysqli_real_escape_string($conn, $_POST['author']);
-    $category = mysqli_real_escape_string($conn, $_POST['category']);
-    $isbn = mysqli_real_escape_string($conn, $_POST['isbn']);
-    $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $copies = isset($_POST['copies']) ? (int)$_POST['copies'] : 0;
-
-    // Handle file upload for book cover
-    $image_path = 'uploads/default-image.jpg'; // Default path if no image is uploaded
-    if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'uploads/';
-        $file_name = uniqid() . '-' . basename($_FILES['image_path']['name']);
-        $target_file = $upload_dir . $file_name;
-
-        // Move the uploaded file
-        if (move_uploaded_file($_FILES['image_path']['tmp_name'], $target_file)) {
-            $image_path = $target_file;
-        } else {
-            echo '<script>alert("Failed to upload image.");</script>';
-        }
-    }
-
-    // Insert into the database
-    $query = "INSERT INTO books (title, author, category, ISBN, description, image_path, copies) 
-              VALUES ('$title', '$author', '$category', '$isbn', '$description', '$image_path', $copies)";
-
-    if (mysqli_query($conn, $query)) {
-        echo '<script>alert("Book added successfully!"); window.location.href="admin_home.php";</script>';
-    } else {
-        echo '<script>alert("Failed to add book: ' . mysqli_error($conn) . '");</script>';
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -208,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Main Content -->
     <div class="form-container">
         <h2>Add New Book</h2>
-        <form action="add_book.php" method="POST" enctype="multipart/form-data">
+        <form action="/app/books/add.php" method="POST" enctype="multipart/form-data">
             
 
         <script>
@@ -275,7 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-actions">
                 <button type="submit">Save Book</button>
-                <a href="admin_home.php">Cancel</a>
+                <a href="<?php echo BASE_URL; ?>admin_home.php">Cancel</a>
             </div>
         </form>
     </div>

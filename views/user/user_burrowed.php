@@ -1,6 +1,6 @@
 <?php
 include('../includes/header.php');
-include('../includes/db.php');
+include('../app/config/DatabaseConnect.php');
 include('../includes/session_start.php');
 
 if (isset($_SESSION['username'])) {

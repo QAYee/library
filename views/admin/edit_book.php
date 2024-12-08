@@ -1,15 +1,30 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
+require_once(ROOT_DIR . "/includes/header.php");
 
+require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
+session_start();
+
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
 
 // Retrieve book data based on ID
-$book_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$book_id = isset($_GET['id']) && is_numeric($_GET['id']) ? (int)$_GET['id'] : 0;
 
-$query = "SELECT * FROM books WHERE id = $book_id";
-$result = mysqli_query($conn, $query);
+// Redirect if the book ID is invalid
+if ($book_id <= 0) {
+    echo '<script>alert("Invalid book ID!"); window.location.href="admin_home.php";</script>';
+    exit;
+}
+
+// Fetch the book's current data
+$stmt = mysqli_prepare($conn, "SELECT * FROM books WHERE id = ?");
+mysqli_stmt_bind_param($stmt, "i", $book_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+mysqli_stmt_close($stmt);
+
 $book = mysqli_fetch_assoc($result);
 
 if (!$book) {
@@ -17,9 +32,35 @@ if (!$book) {
     exit;
 }
 
+// Function to handle image upload
+function uploadImage($file, $current_image_path) {
+    $upload_dir = $_SERVER['DOCUMENT_ROOT'] . '/pages/uploads/';
+
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+
+    if (isset($file) && $file['error'] === UPLOAD_ERR_OK) {
+        $file_name = uniqid() . '-' . basename($file['name']);
+        $target_file = $upload_dir . $file_name;
+
+        if (move_uploaded_file($file['tmp_name'], $target_file)) {
+            // Delete the old image if it exists and is different from the new one
+            if ($current_image_path !== $target_file) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $current_image_path);
+            }
+            return '/pages/uploads/' . $file_name;
+        } else {
+            echo '<script>alert("Failed to upload image.");</script>';
+        }
+    }
+
+    return $current_image_path; // Return the current image path if no new image is uploaded or upload fails
+}
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect form data
+    // Collect and sanitize form data
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $author = mysqli_real_escape_string($conn, $_POST['author']);
     $category = mysqli_real_escape_string($conn, $_POST['category']);
@@ -27,39 +68,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $copies = isset($_POST['copies']) ? (int)$_POST['copies'] : 0;
 
-    // Handle file upload for book cover
-    $image_path = $book['image_path']; // Use existing image path if no new image is uploaded
-    if (isset($_FILES['image_path']) && $_FILES['image_path']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = 'uploads/';
-        $file_name = uniqid() . '-' . basename($_FILES['image_path']['name']);
-        $target_file = $upload_dir . $file_name;
-
-        // Move the uploaded file
-        if (move_uploaded_file($_FILES['image_path']['tmp_name'], $target_file)) {
-            $image_path = $target_file;
-        } else {
-            echo '<script>alert("Failed to upload image.");</script>';
-        }
-    }
+    // Handle the image upload
+    $image_path = uploadImage($_FILES['image'], $book['image_path']);
 
     // Update the book record in the database
     $update_query = "UPDATE books SET 
-                        title = '$title', 
-                        author = '$author', 
-                        category = '$category', 
-                        ISBN = '$isbn', 
-                        description = '$description', 
-                        image_path = '$image_path', 
-                        copies = $copies 
-                     WHERE id = $book_id";
+        title = ?, 
+        author = ?, 
+        category = ?, 
+        ISBN = ?, 
+        description = ?, 
+        image_path = ?, 
+        copies = ? 
+        WHERE id = ?";
 
-    if (mysqli_query($conn, $update_query)) {
-        echo '<script>alert("Book updated successfully!"); window.location.href="admin_home.php";</script>';
+    $stmt = mysqli_prepare($conn, $update_query);
+    mysqli_stmt_bind_param($stmt, "ssssisii", $title, $author, $category, $isbn, $description, $image_path, $copies, $book_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: ../../admin_home.php");
+        exit;
     } else {
-        echo '<script>alert("Failed to update book: ' . mysqli_error($conn) . '");</script>';
+        echo '<script>alert("Failed to update book: ' . mysqli_stmt_error($stmt) . '");</script>';
     }
+
+    mysqli_stmt_close($stmt);
 }
+
+mysqli_close($conn);
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -261,21 +300,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
 
-<nav class="navbar">
-        <a href="admin_home.php">Manage Books</a>
-        <a href="book_request.php">Requests</a> <!-- Book Request Link -->
-        <a href="transaction.php">Transactions</a>
-        <div class="dropdown">
-            <button class="dropbtn">
-                <?php echo htmlspecialchars($username); ?> ▼
-            </button>
-            <div class="dropdown-content">
-                <a href="profile_admin.php">Profile</a>
-                <a href="dashboard_admin.php">Dashboard</a>
-                <a href="home.php" style="color: red;">Logout</a>
-            </div>
+    <nav class="navbar">
+    <a href="<?php echo BASE_URL; ?>admin_home.php">Manage Books</a>
+    <a href="<?php echo BASE_URL; ?>views/user/book_request.php">Requests</a> <!-- Book Request Link -->
+    <a href="<?php echo BASE_URL; ?>views/admin/transactions.php">Transactions</a>
+    <div class="dropdown">
+        <button class="dropbtn">
+            <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
+        </button>
+        <div class="dropdown-content">
+            <a href="profile_admin.php">Profile</a>
+            <a href="dashboard_admin.php">Dashboard</a>
+            <a href="home.php" style="color: red;">Logout</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Main Content -->
     <div class="form-container">
@@ -339,7 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="form-actions">
                 <button type="submit">Save Changes</button>
-                <a href="admin_home.php">Cancel</a>
+                <a href="<?php echo BASE_URL;?>admin_home.php">Cancel</a>
             </div>
         </form>
     </div>

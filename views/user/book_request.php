@@ -1,8 +1,13 @@
 <?php
-include('header_admin.php');
-include('navbar_admin.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header_admin.php");
+require_once(ROOT_DIR."/includes/navbar_admin.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+
+
+// Initialize the database connection
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
 
 if (isset($_SESSION['username'])) {
     $username = $_SESSION['username'];  // Get the logged-in user's username
@@ -86,7 +91,8 @@ if (isset($_GET['id']) && isset($_GET['action'])) {
     } elseif ($action == 'decline') {
         // Handle decline action
         $status = 'declined';
-        $query = "UPDATE book_requests SET status = '$status' WHERE request_id = '$request_id'";
+        $query = "DELETE FROM book_requests WHERE request_id = '$request_id'";
+
         
         if (mysqli_query($conn, $query)) {
             echo "<script>alert('Request has been declined.');</script>";
@@ -237,6 +243,4 @@ if (!$result) {
     }
     ?>
 
-<?php include('footer.php'); ?>
-</body>
-</html>
+<?php require_once(ROOT_DIR."/includes/footer.php")?>

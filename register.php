@@ -1,7 +1,8 @@
 <?php
-include('../includes/header.php');
-include('../includes/db.php');
-include('../includes/session_start.php');
+require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
+require_once(ROOT_DIR."/includes/header.php");
+require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -41,12 +42,7 @@ include('../includes/session_start.php');
     </header>
 
     <!-- Navbar -->
-    <nav class="navbar">
-        <a href="home.php">Home</a>
-        <a href="login.php">Login</a>
-        <a href="register.php">Register</a>
-        <a href="#categories">Categories</a>
-    </nav>
+    <?php require_once(ROOT_DIR."/includes/navbar.php");?>
 
     <!-- Main Content (Register Form) -->
     <div style="display: flex; justify-content: center; align-items: center; height: 70vh;">
@@ -60,7 +56,7 @@ include('../includes/session_start.php');
             }
             ?>
 
-            <form action="../register_action.php" method="post" onsubmit="return validateForm()">
+            <form action="app/auth/register_action.php" method="post" onsubmit="return validateForm()">
                 <input type="text" name="full_name" placeholder="Full Name" required style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; background-color: #e2e2e2; color: #333;">
                 <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; background-color: #e2e2e2; color: #333;">
                 <input type="text" name="course" placeholder="Course" required style="width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; background-color: #e2e2e2; color: #333;">
@@ -73,9 +69,7 @@ include('../includes/session_start.php');
     </div>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2024 Library System. All rights reserved.</p>
-    </footer>
+    <?php require_once(ROOT_DIR."/includes/footer.php")?>
 
     <script>
         function checkPasswordStrength() {

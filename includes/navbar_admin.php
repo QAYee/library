@@ -1,4 +1,13 @@
 <?php
+session_start();
+require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
+require_once(ROOT_DIR . "/includes/header.php");
+require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
+
+$db = new DatabaseConnect();
+$conn = $db->connectDB();
+
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
     if (isset($_SESSION['username'])) {
         $username = $_SESSION['username'];  
     } else {
@@ -8,20 +17,18 @@
 
     <!-- navbar.php -->
     <nav class="navbar">
-        <a href="admin_home.php">Manage Books</a>
-        <a href="book_request.php">Requests</a>
-        <a href="transactions.php">Transactions</a>
-        <div class="dropdown">
-            <button class="dropbtn">
-                <?php echo htmlspecialchars($username); ?> ▼
-            </button>
-            <div class="dropdown-content">
-                <a href="profile_admin.php">Profile</a>
-                <a href="dashboard_admin.php">Dashboard</a>
-                <a href="home.php" style="color: red;">Logout</a>
-            </div>
+    <a href="<?php echo BASE_URL; ?>admin_home.php">Manage Books</a>
+    <a href="<?php echo BASE_URL; ?>views/user/book_request.php">Requests</a> <!-- Book Request Link -->
+    <a href="<?php echo BASE_URL; ?>views/admin/transactions.php">Transactions</a>
+    <div class="dropdown">
+        <button class="dropbtn">
+            <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
+        </button>
+        <div class="dropdown-content">
+            <a href="<?php echo BASE_URL; ?>home.php" style="color: red;">Logout</a>
         </div>
-    </nav>
+    </div>
+</nav>
 <style>
     
     .navbar {
