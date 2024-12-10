@@ -33,6 +33,37 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions</title>
     <style>
+        .pdf-generator-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        /* Button styling */
+        .btn-generate-pdf {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            padding: 10px 20px; /* Padding for a comfortable size */
+            font-size: 16px; /* Font size for readability */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth effects */
+        }
+
+        /* Button hover effect */
+        .btn-generate-pdf:hover {
+            background-color: #45a049; /* Darker green on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        /* Button focus effect */
+        .btn-generate-pdf:focus {
+            outline: 2px solid #007BFF; /* Blue outline for accessibility */
+            outline-offset: 2px;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -76,6 +107,11 @@ if (!$result) {
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; padding-bottom: 40px; background-color: #e2e2e2;">
 <h1>Transaction Records</h1>
+<div>
+    <form action="<?php echo BASE_URL; ?>generate_pdf.php" method="post">
+        <button type="submit">Generate PDF</button>
+    </form>
+</div>
 
 <?php if (mysqli_num_rows($result) > 0): ?>
     <table class="transaction-table">
