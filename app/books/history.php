@@ -219,7 +219,7 @@ if ($book_id) {
 </head>
 <body>
 <nav class="navbar">
-                <a href="user_home.php">Home</a>
+                <a href="<?php echo BASE_URL; ?>user_home.php">Home</a>
                 <a href="<?php echo BASE_URL; ?>views/user/book_status.php">Borrowed Books</a> <!-- Book Request Link -->
                 <div class="dropdown">
                     <button class="dropbtn">
