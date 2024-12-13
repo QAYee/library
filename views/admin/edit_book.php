@@ -403,7 +403,15 @@ $conn->close();
                     <option value="History" <?php if ($book['category'] == 'History') echo 'selected'; ?>>History</option>
                     <option value="Art" <?php if ($book['category'] == 'Art') echo 'selected'; ?>>Art</option>
                     <option value="Technology" <?php if ($book['category'] == 'Technology') echo 'selected'; ?>>Technology</option>
+                    <option value="Biography" <?php if ($book['category'] == 'Biography') echo 'selected'; ?>>Biography</option>
+                    <option value="Mystery" <?php if ($book['category'] == 'Mystery') echo 'selected'; ?>>Mystery</option>
+                    <option value="Fantasy" <?php if ($book['category'] == 'Fantasy') echo 'selected'; ?>>Fantasy</option>
+                    <option value="Romance" <?php if ($book['category'] == 'Romance') echo 'selected'; ?>>Romance</option>
+                    <option value="Horror" <?php if ($book['category'] == 'Horror') echo 'selected'; ?>>Horror</option>
+                    <option value="Self-Help" <?php if ($book['category'] == 'Self-Help') echo 'selected'; ?>>Self-Help</option>
+                    <option value="Poetry" <?php if ($book['category'] == 'Poetry') echo 'selected'; ?>>Poetry</option>
                 </select>
+
             </div>
             <div class="form-group">
                 <label for="isbn">ISBN</label>

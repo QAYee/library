@@ -226,7 +226,15 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
                     <option value="History">History</option>
                     <option value="Art">Art</option>
                     <option value="Technology">Technology</option>
+                    <option value="Biography">Biography</option>
+                    <option value="Mystery">Mystery</option>
+                    <option value="Fantasy">Fantasy</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Self-Help">Self-Help</option>
+                    <option value="Poetry">Poetry</option>
                 </select>
+
             </div>
             <div class="form-group">
                 <label for="isbn">ISBN</label>
