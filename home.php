@@ -298,8 +298,9 @@ if (!$result) {
                 ?>
                 
             </div>
+            
             <div>
-  <?php
+            <?php
     // Initialize the database connection
     $db = new DatabaseConnect();
     $conn = $db->connectDB();
@@ -308,20 +309,20 @@ if (!$result) {
         echo "Database connection failed.";
     } else {
         try {
-            // Fetch the count of approved books from the transactions table
-            $approvedBooksQuery = "
-                SELECT COUNT(DISTINCT book_id) AS approved_count
-                FROM transactions
-                WHERE status = 'approved'";
-            $approvedBooksResult = mysqli_query($conn, $approvedBooksQuery);
-            $approvedBooksCount = 0;
+            // Fetch the count of books in the books table
+            $booksCountQuery = "
+                SELECT COUNT(*) AS books_count
+                FROM books";
+            $booksCountResult = mysqli_query($conn, $booksCountQuery);
+            $booksCount = 0;
 
-            if ($approvedBooksResult && mysqli_num_rows($approvedBooksResult) > 0) {
-                $approvedBooksData = mysqli_fetch_assoc($approvedBooksResult);
-                $approvedBooksCount = isset($approvedBooksData['approved_count']) ? (int)$approvedBooksData['approved_count'] : 0;
+            if ($booksCountResult && mysqli_num_rows($booksCountResult) > 0) {
+                $booksData = mysqli_fetch_assoc($booksCountResult);
+                $booksCount = isset($booksData['books_count']) ? (int)$booksData['books_count'] : 0;
             }
 
-            echo "<h3>Total Approved Books: {$approvedBooksCount}</h3>";
+            echo "<h3>Total Books: {$booksCount}</h3>";
+            echo"<div><h3>Top Five Burrowed Book</h3></div>";
 
             // Fetch top 5 popular books based on total borrows
             $popularBooksQuery = "
@@ -350,7 +351,8 @@ if (!$result) {
             echo "Error fetching data: " . $e->getMessage();
         }
     }
-    ?>
+?>
+
     <style>
   
   </style>
