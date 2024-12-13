@@ -228,7 +228,7 @@ if ($query) {
             <div class="dropdown-content">
                 <a href="profile_admin.php">Profile</a>
                 <a href="dashboard_admin.php">Dashboard</a>
-                <a href="home.php" style="color: red;">Logout</a>
+                <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
             </div>
         </div>
     </nav>

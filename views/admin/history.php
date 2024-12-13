@@ -4,6 +4,7 @@ require_once(ROOT_DIR."/includes/header_admin.php");
 require_once(ROOT_DIR."/includes/navbar_admin.php");
 require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
 
+
 $db = new DatabaseConnect();
 $conn = $db->connectDB();
 
@@ -49,6 +50,7 @@ if ($book_id) {
     exit;
 }
 ?>
+<?php require_once(ROOT_DIR."/views/components/page-guard.php"); ?>
 
 <!DOCTYPE html>
 <html lang="en">

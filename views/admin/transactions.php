@@ -1,5 +1,6 @@
 <?php
 require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
+
 require_once(ROOT_DIR."/includes/header_admin.php");
 require_once(ROOT_DIR."/includes/navbar_admin.php");
 require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
@@ -25,7 +26,7 @@ if (!$result) {
     die("Query failed: " . mysqli_error($conn));
 }
 ?>
-
+<?php require_once(ROOT_DIR."/views/components/page-guard.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

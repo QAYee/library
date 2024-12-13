@@ -3,7 +3,7 @@ require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
 require_once(ROOT_DIR . "/includes/header.php");
 require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
 session_start();
-
+require_once(ROOT_DIR."/views/components/page-guard.php"); 
 // Initialize database connection
 $db = new DatabaseConnect();
 $conn = $db->connectDB();
@@ -133,206 +133,197 @@ $conn->close();
 ?>
 
 
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Edit Book</title>
-<style>
+        <style>
 
-.navbar {
-    display: flex;
-    justify-content: flex-end; /* Align all elements to the right */
-    align-items: center;
-    background-color: #eee;
-    color: black;
-    padding: 1px;
-}
+                .navbar {
+                    display: flex;
+                    justify-content: flex-end; /* Align all elements to the right */
+                    align-items: center;
+                    background-color: #eee;
+                    color: black;
+                    padding: 1px;
+                }
 
-.navbar a {
-    color: #333; /* Black text for links */
-    text-decoration: none;
-    padding: 10px;
-    margin-left: 10px;
-}
+                .navbar a {
+                    color: #333; /* Black text for links */
+                    text-decoration: none;
+                    padding: 10px;
+                    margin-left: 10px;
+                }
 
-.navbar a:hover {
-    color: red; /* Change text color to red on hover */
-}
+                .navbar a:hover {
+                    color: red; /* Change text color to red on hover */
+                }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+                .dropdown {
+                    position: relative;
+                    display: inline-block;
+                }
 
-.dropbtn {
-    background-color: transparent; /* No background color */
-    color: #333; /* Black text */
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none; /* Remove any border */
-    outline: none; /* Remove outline on focus */
-}
+                .dropbtn {
+                    background-color: transparent; /* No background color */
+                    color: #333; /* Black text */
+                    padding: 10px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    border: none; /* Remove any border */
+                    outline: none; /* Remove outline on focus */
+                }
 
-.dropbtn:hover {
-    color: red; /* Change text color to red on hover */
-}
+                .dropbtn:hover {
+                    color: red; /* Change text color to red on hover */
+                }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    min-width: 150px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 5px;
-    overflow: hidden;
-}
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    right: 0;
+                    background-color: #fff;
+                    min-width: 150px;
+                    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                    z-index: 1;
+                    border-radius: 5px;
+                    overflow: hidden;
+                }
 
-.dropdown-content a {
-    color: #333;
-    padding: 10px;
-    text-decoration: none;
-    display: block;
-    font-weight: normal;
-}
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px;
+                    text-decoration: none;
+                    display: block;
+                    font-weight: normal;
+                }
 
-.dropdown-content a:hover {
-    background-color: #f2f2f2;
-}
+                .dropdown-content a:hover {
+                    background-color: #f2f2f2;
+                }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-        }
-        .form-container {
-            width: 90%;
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .form-actions button,
-        .form-actions a {
-            width: 48%;
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-        }
-        .form-actions button {
-            background-color: #a33b3b;
-        }
-        .form-actions a {
-            background-color: #555;
-        }
+                body {
+                    margin: 0;
+                    padding: 0;
+                    font-family: Arial, sans-serif;
+                    background-color: #f7f7f7;
+                }
+                .form-container {
+                    width: 90%;
+                    max-width: 600px;
+                    margin: 50px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .form-container h2 {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .form-group input,
+                .form-group select,
+                .form-group textarea {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+                .form-actions {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .form-actions button,
+                .form-actions a {
+                    width: 48%;
+                    text-align: center;
+                    padding: 10px;
+                    font-size: 14px;
+                    border: none;
+                    border-radius: 5px;
+                    color: white;
+                    text-decoration: none;
+                }
+                .form-actions button {
+                    background-color: #a33b3b;
+                }
+                .form-actions a {
+                    background-color: #555;
+                }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
-        }
-        .form-container {
-            width: 90%;
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .form-actions button,
-        .form-actions a {
-            width: 48%;
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-        }
-        .form-actions button {
-            background-color: #a33b3b;
-        }
-        .form-actions a {
-            background-color: #555;
-        }
-</style>
+                body {
+                    margin: 0;
+                    padding: 0;
+                    font-family: Arial, sans-serif;
+                    background-color: #f7f7f7;
+                }
+                .form-container {
+                    width: 90%;
+                    max-width: 600px;
+                    margin: 50px auto;
+                    background: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .form-container h2 {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
+                .form-group {
+                    margin-bottom: 15px;
+                }
+                .form-group label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                }
+                .form-group input,
+                .form-group select,
+                .form-group textarea {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+                .form-actions {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .form-actions button,
+                .form-actions a {
+                    width: 48%;
+                    text-align: center;
+                    padding: 10px;
+                    font-size: 14px;
+                    border: none;
+                    border-radius: 5px;
+                    color: white;
+                    text-decoration: none;
+                }
+                .form-actions button {
+                    background-color: #a33b3b;
+                }
+                .form-actions a {
+                    background-color: #555;
+                }
+        </style>
 </head>
 <body>
 
@@ -341,18 +332,16 @@ $conn->close();
     </header>
 
 
-    <nav class="navbar">
+<nav class="navbar">
     <a href="<?php echo BASE_URL; ?>admin_home.php">Manage Books</a>
-    <a href="<?php echo BASE_URL; ?>views/user/book_request.php">Requests</a> <!-- Book Request Link -->
+    <a href="<?php echo BASE_URL; ?>views/admin/book_request.php">Requests</a> <!-- Book Request Link -->
     <a href="<?php echo BASE_URL; ?>views/admin/transactions.php">Transactions</a>
     <div class="dropdown">
         <button class="dropbtn">
             <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
         </button>
         <div class="dropdown-content">
-            <a href="profile_admin.php">Profile</a>
-            <a href="dashboard_admin.php">Dashboard</a>
-            <a href="home.php" style="color: red;">Logout</a>
+            <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
         </div>
     </div>
 </nav>

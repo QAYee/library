@@ -234,7 +234,7 @@ $conn = $db->connectDB();
                         <?php echo htmlspecialchars($username); ?> ▼
                     </button>
                     <div class="dropdown-content">
-                        <a href="home.php" style="color: red;">Logout</a>
+                        <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
                     </div>
                 </div>
             </nav>

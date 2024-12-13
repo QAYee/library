@@ -226,7 +226,7 @@ if ($book_id) {
                     <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
                     </button>
                     <div class="dropdown-content">
-                        <a href="<?php echo BASE_URL; ?>home.php" style="color: red;">Logout</a>
+                        <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
                     </div>
                 </div>
             </nav>

@@ -18,14 +18,14 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
     <!-- navbar.php -->
     <nav class="navbar">
     <a href="<?php echo BASE_URL; ?>admin_home.php">Manage Books</a>
-    <a href="<?php echo BASE_URL; ?>views/user/book_request.php">Requests</a> <!-- Book Request Link -->
+    <a href="<?php echo BASE_URL; ?>views/admin/book_request.php">Requests</a> <!-- Book Request Link -->
     <a href="<?php echo BASE_URL; ?>views/admin/transactions.php">Transactions</a>
     <div class="dropdown">
         <button class="dropbtn">
             <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
         </button>
         <div class="dropdown-content">
-            <a href="<?php echo BASE_URL; ?>home.php" style="color: red;">Logout</a>
+            <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
         </div>
     </div>
 </nav>

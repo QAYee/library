@@ -133,7 +133,7 @@ if (!$result) {
     die("Database query failed: " . mysqli_error($conn));
 }
 ?>
-
+<?php require_once(ROOT_DIR."/views/components/page-guard.php"); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

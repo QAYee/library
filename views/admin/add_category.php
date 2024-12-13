@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
+<?php require_once(ROOT_DIR."/views/components/page-guard.php"); ?> 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="dropdown-content">
                 <a href="profile_admin.php">Profile</a>
                 <a href="dashboard_admin.php">Dashboard</a>
-                <a href="logout.php" style="color: red;">Logout</a>
+                <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
             </div>
         </div>
     </nav>

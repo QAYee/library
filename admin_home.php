@@ -10,7 +10,7 @@ $conn = $db->connectDB();
 
 
 ?>
-
+<?php require_once(ROOT_DIR."/views/components/page-guard.php"); ?> 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,74 +18,74 @@ $conn = $db->connectDB();
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Admin Panel</title>
             <link rel="stylesheet" href="styles.css">
-            <style>
+     <style>
 
-.navbar {
-    display: flex;
-    justify-content: flex-end; /* Align all elements to the right */
-    align-items: center;
-    background-color: #eee;
-    color: black;
-    padding: 1px;
-}
+            .navbar {
+                display: flex;
+                justify-content: flex-end; /* Align all elements to the right */
+                align-items: center;
+                background-color: #eee;
+                color: black;
+                padding: 1px;
+            }
 
-.navbar a {
-    color: #333; /* Black text for links */
-    text-decoration: none;
-    padding: 10px;
-    margin-left: 10px;
-}
+            .navbar a {
+                color: #333; /* Black text for links */
+                text-decoration: none;
+                padding: 10px;
+                margin-left: 10px;
+            }
 
-.navbar a:hover {
-    color: red; /* Change text color to red on hover */
-}
+            .navbar a:hover {
+                color: red; /* Change text color to red on hover */
+            }
 
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
+            .dropdown {
+                position: relative;
+                display: inline-block;
+            }
 
-.dropbtn {
-    background-color: transparent; /* No background color */
-    color: #333; /* Black text */
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none; /* Remove any border */
-    outline: none; /* Remove outline on focus */
-}
+            .dropbtn {
+                background-color: transparent; /* No background color */
+                color: #333; /* Black text */
+                padding: 10px;
+                font-size: 16px;
+                cursor: pointer;
+                border: none; /* Remove any border */
+                outline: none; /* Remove outline on focus */
+            }
 
-.dropbtn:hover {
-    color: red; /* Change text color to red on hover */
-}
+            .dropbtn:hover {
+                color: red; /* Change text color to red on hover */
+            }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    min-width: 150px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 5px;
-    overflow: hidden;
-}
+            .dropdown-content {
+                display: none;
+                position: absolute;
+                right: 0;
+                background-color: #fff;
+                min-width: 150px;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                border-radius: 5px;
+                overflow: hidden;
+            }
 
-.dropdown-content a {
-    color: #333;
-    padding: 10px;
-    text-decoration: none;
-    display: block;
-    font-weight: normal;
-}
+            .dropdown-content a {
+                color: #333;
+                padding: 10px;
+                text-decoration: none;
+                display: block;
+                font-weight: normal;
+            }
 
-.dropdown-content a:hover {
-    background-color: #f2f2f2;
-}
+            .dropdown-content a:hover {
+                background-color: #f2f2f2;
+            }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+            .dropdown:hover .dropdown-content {
+                display: block;
+            }
         .add-book-btn {
                     display: inline-block;
                     padding: 12px 20px;
@@ -217,14 +217,14 @@ $conn = $db->connectDB();
     <!-- Navbar -->
 <nav class="navbar">
     <a href="<?php echo BASE_URL; ?>admin_home.php">Manage Books</a>
-    <a href="<?php echo BASE_URL; ?>views/user/book_request.php">Requests</a> <!-- Book Request Link -->
+    <a href="<?php echo BASE_URL; ?>views/admin/book_request.php">Requests</a> <!-- Book Request Link -->
     <a href="<?php echo BASE_URL; ?>views/admin/transactions.php">Transactions</a>
     <div class="dropdown">
         <button class="dropbtn">
             <?php echo isset($_SESSION["username"]) ? htmlspecialchars($_SESSION["username"]) : 'Guest'; ?> ▼
         </button>
         <div class="dropdown-content">
-            <a href="home.php" style="color: red;">Logout</a>
+            <a href="<?php echo BASE_URL; ?>logout.php" style="color: red;">Logout</a>
         </div>
     </div>
 </nav>
