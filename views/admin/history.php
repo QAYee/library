@@ -21,6 +21,18 @@ if ($book_id) {
     $book_query = "SELECT * FROM books WHERE id = '$book_id' LIMIT 1";
     $book_result = mysqli_query($conn, $book_query);
 
+
+    $stmt = $conn->prepare("SELECT COUNT(*) AS borrow_count FROM transactions WHERE book_id = ?");
+    $stmt->bind_param("s", $book_id); // Assuming $book_id is a string
+    $stmt->execute();
+    
+    // Fetch the result
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $borrow_count = $row['borrow_count']; // Fetch the count value
+    
+
+
     if (!$book_result) {
         die("Query failed: " . mysqli_error($conn));
     }
@@ -166,7 +178,7 @@ if ($book_id) {
             <p><strong>Category:</strong> <?php echo htmlspecialchars($book['category']) ?: 'No Category'; ?></p>
             <p><strong>ISBN:</strong> <?php echo htmlspecialchars($book['ISBN']) ?: 'No ISBN'; ?></p>
             <p><strong>Copies Available:</strong> <?php echo htmlspecialchars($book['copies']) ?: '0'; ?></p>
-            <p><strong>Total Borrows:</strong> <?php echo htmlspecialchars($book['total_borrows']) ?: '0'; ?></p>
+            <p><strong>Total Borrows:</strong> <?php echo htmlspecialchars($borrow_count) ?: '0'; ?></p>
             <div>
             </div>
         </div>

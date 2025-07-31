@@ -1,35 +1,35 @@
 <?php
-require_once($_SERVER["DOCUMENT_ROOT"]."/app/config/Directories.php");
-require_once(ROOT_DIR."/includes/header.php");
-require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
+require_once $_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php";
+require_once ROOT_DIR . "/includes/header.php";
+require_once ROOT_DIR . "/app/config/DatabaseConnect.php";
 
 session_start();
 // Initialize the database connection
 $db = new DatabaseConnect();
 $conn = $db->connectDB();
 
-        if (isset($_SESSION['username'])) {
-            $username = $_SESSION['username'];  // Get the logged-in user's username
-        } else {
-            $username = 'Guest';  // Default value if user is not logged in
-        }
+if (isset($_SESSION["username"])) {
+    $username = $_SESSION["username"]; // Get the logged-in user's username
+} else {
+    $username = "Guest"; // Default value if user is not logged in
+}
 
-        $query = "SELECT id, title, description, author, category, ISBN, copies, image_path FROM books";
-        $result = mysqli_query($conn, $query);
+$query =
+    "SELECT id, title, description, author, category, ISBN, copies, image_path FROM books";
+$result = mysqli_query($conn, $query);
 
-        // Check if the query ran successfully
-        if (!$result) {
-            die("Database query failed: " . mysqli_error($conn));
+// Check if the query ran successfully
+if (!$result) {
+    die("Database query failed: " . mysqli_error($conn));
 
-            $query = "INSERT INTO book_requests (book_id, username, status) VALUES ('$book_id', '$username', 'pending')";
-            if (mysqli_query($conn, $query)) {
-                echo "Request submitted successfully!";
-                header("Location: book_request.php"); // Redirect to the book requests page
-            } else {
-                echo "Error: " . mysqli_error($conn);
-            }
-        } 
-
+    $query = "INSERT INTO book_requests (book_id, username, status) VALUES ('$book_id', '$username', 'pending')";
+    if (mysqli_query($conn, $query)) {
+        echo "Request submitted successfully!";
+        header("Location: book_request.php"); // Redirect to the book requests page
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
 ?>
 
         <!DOCTYPE html>
@@ -243,79 +243,92 @@ $conn = $db->connectDB();
             <div class="container" style="padding: 20px;">
                 <!-- Search Bar -->
                 <div style="margin-bottom: 20px;">
-                    <form action="<?php echo BASE_URL;?>app/books/search_books.php" method="GET">
+                    <form action="<?php echo BASE_URL; ?>app/books/search_books.php" method="GET">
                         <input type="text" name="query" placeholder="Search Books" required style="width: calc(100% - 110px); padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
                         <button type="submit" style="padding: 10px 20px; background-color: #a33b3b; color: white; border: none; border-radius: 5px; cursor: pointer;">Search</button>
                     </form>
                 </div>
 
-                
-            
-           
-                
-
-
             <div class="book-cards-container">
-            <?php
-if (mysqli_num_rows($result) > 0) {
-    while ($book = mysqli_fetch_assoc($result)) {
-        $bookTitle = isset($book['title']) ? htmlspecialchars($book['title']) : 'No Title';
-        $bookDescription = isset($book['description']) ? htmlspecialchars($book['description']) : 'No Description';
-        $bookAuthor = isset($book['author']) ? htmlspecialchars($book['author']) : 'No Author';
-        $bookCategory = isset($book['category']) ? htmlspecialchars($book['category']) : 'No Category';
-        $bookIsbn = isset($book['ISBN']) ? htmlspecialchars($book['ISBN']) : 'No ISBN';
-        $bookCopies = isset($book['copies']) ? htmlspecialchars($book['copies']) : '0';
-        $bookTotalBorrows = isset($book['total_borrows']) ? htmlspecialchars($book['total_borrows']) : '0';
-        $bookImage = isset($book['image_path']) ? htmlspecialchars($book['image_path']) : 'default-image.jpg';
-        $username = $_SESSION['username'];
-        $book_id = $book['id'];
+            <?php if (mysqli_num_rows($result) > 0) {
+                while ($book = mysqli_fetch_assoc($result)) {
 
-        $query = "SELECT * FROM book_requests WHERE book_id = '$book_id' AND username = '$username' LIMIT 1";
-        $request_result = mysqli_query($conn, $query);
-        $request = mysqli_fetch_assoc($request_result);
+                    $bookTitle = isset($book["title"])
+                        ? htmlspecialchars($book["title"])
+                        : "No Title";
+                    $bookDescription = isset($book["description"])
+                        ? htmlspecialchars($book["description"])
+                        : "No Description";
+                    $bookAuthor = isset($book["author"])
+                        ? htmlspecialchars($book["author"])
+                        : "No Author";
+                    $bookCategory = isset($book["category"])
+                        ? htmlspecialchars($book["category"])
+                        : "No Category";
+                    $bookIsbn = isset($book["ISBN"])
+                        ? htmlspecialchars($book["ISBN"])
+                        : "No ISBN";
+                    $bookCopies = isset($book["copies"])
+                        ? htmlspecialchars($book["copies"])
+                        : "0";
+                    $bookTotalBorrows = isset($book["total_borrows"])
+                        ? htmlspecialchars($book["total_borrows"])
+                        : "0";
+                    $bookImage = isset($book["image_path"])
+                        ? htmlspecialchars($book["image_path"])
+                        : "default-image.jpg";
+                    $username = $_SESSION["username"];
+                    $book_id = $book["id"];
 
-        // Check if copies are available
-        if ($bookCopies == 0 && $request['status'] != 'approved') {
-            $button_text = "Not Available";
-        } else {
-            // Query to check the book request status for the current user
-          
+                    $query = "SELECT * FROM book_requests WHERE book_id = '$book_id' AND username = '$username' LIMIT 1";
+                    $request_result = mysqli_query($conn, $query);
+                    $request = mysqli_fetch_assoc($request_result);
 
-            if ($request) {
-                $status = $request['status'];
-                if ($status == 'pending') {
-                    $button_text = 'Pending';
-                    $button_class = 'btn-pending';
-                    $disabled = 'disabled'; // Button is disabled for pending requests
-                } elseif ($status == 'approved') {
-                    $button_text = 'Borrowed';
-                    $button_class = 'btn-borrowed';
-                    $disabled = 'disabled'; // Button is disabled for approved requests
-                } elseif ($status == 'returned') {
-                    $button_text = 'Borrow';
-                    $button_class = 'btn-borrow';
-                    $disabled = ''; // Enable the button for returned books, allowing borrowing again
 
-                    // Delete transaction for returned book
-                    $delete_query = "DELETE FROM book_requests WHERE book_id = '$book_id' AND username = '$username'";
-                    if (!mysqli_query($conn, $delete_query)) {
-                        echo "<p>Error deleting transaction: " . mysqli_error($conn) . "</p>";
+                    // Check if copies are available
+                    if ($bookCopies == 0) {
+                        $button_text = "Not Available";
+                    } else {
+                        // Query to check the book request status for the current user
+                 
+
+                        if ($request) {
+                            $status = $request["status"];
+                            if ($status == "pending") {
+                                $button_text = "Pending";
+                                $button_class = "btn-pending";
+                                $disabled = "disabled"; // Button is disabled for pending requests
+                            } elseif ($status == "approved") {
+                                $button_text = "Borrowed";
+                                $button_class = "btn-borrowed";
+                                $disabled = "disabled"; // Button is disabled for approved requests
+                            } elseif ($status == "returned") {
+                                $button_text = "Borrow";
+                                $button_class = "btn-borrow";
+                                $disabled = ""; // Enable the button for returned books, allowing borrowing again
+
+                                // Delete transaction for returned book
+                                $delete_query = "DELETE FROM book_requests WHERE book_id = '$book_id' AND username = '$username'";
+                                if (!mysqli_query($conn, $delete_query)) {
+                                    echo "<p>Error deleting transaction: " .
+                                        mysqli_error($conn) .
+                                        "</p>";
+                                }
+                            } else {
+                                // For declined or other statuses
+                                $button_text = "Declined";
+                                $button_class = "btn-declined";
+                                $disabled = "disabled"; // Button is disabled for declined requests
+                            }
+                        } else {
+                            $button_text = "Borrow";
+                            $button_class = "btn-borrow";
+                            $disabled = ""; // Enable the button if no request has been made
+                        }
                     }
-                } else { // For declined or other statuses
-                    $button_text = 'Declined';
-                    $button_class = 'btn-declined';
-                    $disabled = 'disabled'; // Button is disabled for declined requests
-                }
-            } else {
-                $button_text = 'Borrow';
-                $button_class = 'btn-borrow';
-                $disabled = ''; // Enable the button if no request has been made
-            }
-        }
-
-        ?>
+                    ?>
         <div class="book-card">
-            <a href="/app/books/history.php?id=<?php echo $book['id']; ?>">
+            <a href="/app/books/history.php?id=<?php echo $book["id"]; ?>">
                 <img src="<?php echo $bookImage; ?>" alt="Book Image">
             </a>
             <h3 class="book-title"><?php echo $bookTitle; ?></h3>
@@ -327,28 +340,25 @@ if (mysqli_num_rows($result) > 0) {
             <div class="btn-container">
 
 
-            <?php 
-            if (isset($request) && $request['status'] == 'approved') { ?>
-                <a href="/app/books/return_book.php?id=<?php echo $book['id']; ?>" class="btn btn-return">Return</a>
-            <?php 
-            } elseif ($bookCopies > 0) { ?>
-                <a href="/app/books/borrow_book.php?id=<?php echo $book['id']; ?>" class="btn <?php echo $button_class; ?>" <?php echo $disabled; ?>><?php echo $button_text; ?></a>
-            <?php 
-            } else { ?>
+            <?php if (isset($request) && $request["status"] == "approved") { ?>
+                <a href="/app/books/return_book.php?id=<?php echo $book[
+                    "id"
+                ]; ?>" class="btn btn-return">Return</a>
+            <?php } elseif ($bookCopies > 0) { ?>
+                <a href="/app/books/borrow_book.php?id=<?php echo $book[
+                    "id"
+                ]; ?>" class="btn <?php echo $button_class; ?>" <?php echo $disabled; ?>><?php echo $button_text; ?></a>
+            <?php } else { ?>
                 <p>Not Available</p>
-            <?php 
-            } ?>
+            <?php } ?>
 
-                    
-     
             </div>
         </div>
         <?php
-    }
-} else {
-    echo "<p>No books found.</p>";
-}
-?>
+                }
+            } else {
+                echo "<p>No books found.</p>";
+            } ?>
 
 
         </div>

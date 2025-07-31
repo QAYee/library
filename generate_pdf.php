@@ -1,9 +1,9 @@
 <?php
-require_once($_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php");
-require_once(ROOT_DIR . '/app/config/DatabaseConnect.php');
-require_once('C:/Users/biboy/Documents/Web Dev/library/fpdf186/fpdf.php');
+require_once $_SERVER["DOCUMENT_ROOT"] . "/app/config/Directories.php";
+require_once ROOT_DIR . "/app/config/DatabaseConnect.php";
+require_once "C:/Users/biboy/Documents/Web Dev/library/fpdf186/fpdf.php";
 
- // Adjust the path to the FPDF library
+// Adjust the path to the FPDF library
 
 $db = new DatabaseConnect();
 $conn = $db->connectDB();
@@ -25,32 +25,32 @@ if (!$result) {
 // Initialize FPDF
 $pdf = new FPDF();
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 12);
+$pdf->SetFont("Arial", "B", 12);
 
 // Add table header
-$pdf->Cell(20, 10, 'ID', 1);
-$pdf->Cell(50, 10, 'Book Title', 1);
-$pdf->Cell(20, 10, 'User ID', 1);
-$pdf->Cell(30, 10, 'Username', 1);
-$pdf->Cell(20, 10, 'Status', 1);
-$pdf->Cell(30, 10, 'Borrow Date', 1);
-$pdf->Cell(30, 10, 'Return Date', 1);
-$pdf->Cell(20, 10, 'Penalty', 1);
+$pdf->Cell(20, 10, "ID", 1);
+$pdf->Cell(50, 10, "Book Title", 1);
+$pdf->Cell(20, 10, "User ID", 1);
+$pdf->Cell(30, 10, "Username", 1);
+$pdf->Cell(20, 10, "Status", 1);
+$pdf->Cell(30, 10, "Borrow Date", 1);
+$pdf->Cell(30, 10, "Return Date", 1);
+$pdf->Cell(20, 10, "Penalty", 1);
 $pdf->Ln();
 
 // Add data rows
 while ($row = mysqli_fetch_assoc($result)) {
-    $pdf->Cell(20, 10, $row['transaction_id'], 1);
-    $pdf->Cell(50, 10, $row['title'], 1);
-    $pdf->Cell(20, 10, $row['user_id'], 1);
-    $pdf->Cell(30, 10, $row['username'], 1);
-    $pdf->Cell(20, 10, ucfirst($row['status']), 1);
-    $pdf->Cell(30, 10, $row['borrow_date'], 1);
-    $pdf->Cell(30, 10, $row['return_date'] ?: 'Not Returned', 1);
-    $pdf->Cell(20, 10, $row['penalty'] ?: 'None', 1);
+    $pdf->Cell(20, 10, $row["transaction_id"], 1);
+    $pdf->Cell(50, 10, $row["title"], 1);
+    $pdf->Cell(20, 10, $row["user_id"], 1);
+    $pdf->Cell(30, 10, $row["username"], 1);
+    $pdf->Cell(20, 10, ucfirst($row["status"]), 1);
+    $pdf->Cell(30, 10, $row["borrow_date"], 1);
+    $pdf->Cell(30, 10, $row["return_date"] ?: "Not Returned", 1);
+    $pdf->Cell(20, 10, $row["penalty"] ?: "None", 1);
     $pdf->Ln();
 }
 
 // Output PDF
-$pdf->Output('D', 'Transactions.pdf'); // 'D' triggers download, 'F' saves to a file
+$pdf->Output("D", "Transactions.pdf"); // 'D' triggers download, 'F' saves to a file
 ?>

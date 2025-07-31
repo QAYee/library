@@ -4,8 +4,6 @@ require_once(ROOT_DIR."/includes/header.php");
 require_once(ROOT_DIR.'/app/config/DatabaseConnect.php');
 session_start();
 
-
-
 ?>
 
 <!DOCTYPE html>
